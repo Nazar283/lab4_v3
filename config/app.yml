@@ -1,0 +1,12 @@
+database:
+  host: localhost
+  port: 3306
+  user: root
+  password: 1111
+  database: GooglePlayStoreDB
+  charset: utf8mb4
+
+app:
+  debug: true
+  host: 0.0.0.0
+  port: 5000
