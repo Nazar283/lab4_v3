@@ -17,14 +17,14 @@ CORS(app)
 swagger_template = {
     "info": {
         "title": "GooglePlayStore API",
-        "description": "Документація REST API з можливістю тестування запитів.",
+        "description": "REST API documentation with interactive testing capabilities.",
         "version": "1.0.0",
         "contact": {
             "name": "API Support",
             "email": "support@example.com"
         },
     },
-    "host": "localhost:5000", 
+    "host": "localhost:5000",
     "basePath": "/",
     "schemes": ["http"],
 }

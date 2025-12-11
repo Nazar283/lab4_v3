@@ -6,110 +6,126 @@ category_bp = Blueprint('category', __name__)
 controller = CategoryController()
 
 
-# --- Отримати всі категорії ---
+# --- Get all categories ---
 @category_bp.route('/', methods=['GET'])
 @swag_from({
     'tags': ['Categories'],
-    'summary': 'Отримати всі категорії',
-    'description': 'Повертає список усіх категорій із бази даних.',
+    'summary': 'Get all categories',
+    'description': 'Returns a list of all categories stored in the database.',
     'responses': {
-        200: {'description': 'Успішно отримано список категорій'},
-        500: {'description': 'Помилка сервера'}
+        200: {'description': 'Successfully retrieved the list of categories'},
+        500: {'description': 'Server error'}
     }
 })
 def get_all_categories():
     return controller.get_all_categories()
 
 
-# --- Отримати категорію за ID ---
+# --- Get category by ID ---
 @category_bp.route('/<int:category_id>', methods=['GET'])
 @swag_from({
     'tags': ['Categories'],
-    'summary': 'Отримати категорію за ID',
-    'parameters': [{'name': 'category_id', 'in': 'path', 'type': 'integer', 'required': True}],
+    'summary': 'Get a category by ID',
+    'parameters': [
+        {'name': 'category_id', 'in': 'path', 'type': 'integer', 'required': True}
+    ],
     'responses': {
-        200: {'description': 'Категорію знайдено'},
-        404: {'description': 'Не знайдено'},
-        500: {'description': 'Помилка сервера'}
+        200: {'description': 'Category found'},
+        404: {'description': 'Category not found'},
+        500: {'description': 'Server error'}
     }
 })
 def get_category_by_id(category_id):
     return controller.get_category_by_id(category_id)
 
 
-# --- Створити категорію ---
+# --- Create a new category ---
 @category_bp.route('/', methods=['POST'])
 @swag_from({
     'tags': ['Categories'],
-    'summary': 'Створити нову категорію',
+    'summary': 'Create a new category',
     'parameters': [{
         'name': 'body',
         'in': 'body',
         'required': True,
+        'description': 'Payload for creating a new category',
         'schema': {
             'type': 'object',
-            'properties': {'category_name': {'type': 'string', 'example': 'Games'}},
+            'properties': {
+                'category_name': {'type': 'string', 'example': 'Games'}
+            },
             'required': ['category_name']
-        },
-        'description': 'Дані для створення категорії'
+        }
     }],
     'responses': {
-        201: {'description': 'Категорію створено'},
-        400: {'description': 'Некоректні дані'},
-        500: {'description': 'Помилка сервера'}
+        201: {'description': 'Category successfully created'},
+        400: {'description': 'Invalid input data'},
+        500: {'description': 'Server error'}
     }
 })
 def create_category():
     return controller.create_category()
 
 
-# --- Оновити категорію ---
+# --- Update category by ID ---
 @category_bp.route('/<int:category_id>', methods=['PUT'])
 @swag_from({
     'tags': ['Categories'],
-    'summary': 'Оновити категорію за ID',
+    'summary': 'Update a category by ID',
     'parameters': [
         {'name': 'category_id', 'in': 'path', 'type': 'integer', 'required': True},
         {
-            'name': 'body', 'in': 'body', 'required': True,
-            'schema': {'type': 'object', 'properties': {'category_name': {'type': 'string', 'example': 'Productivity'}}}
+            'name': 'body',
+            'in': 'body',
+            'required': True,
+            'description': 'Updated category data',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'category_name': {'type': 'string', 'example': 'Productivity'}
+                }
+            }
         }
     ],
     'responses': {
-        200: {'description': 'Категорію оновлено'},
-        404: {'description': 'Не знайдено'},
-        500: {'description': 'Помилка сервера'}
+        200: {'description': 'Category successfully updated'},
+        404: {'description': 'Category not found'},
+        500: {'description': 'Server error'}
     }
 })
 def update_category(category_id):
     return controller.update_category(category_id)
 
 
-# --- Видалити категорію ---
+# --- Delete category ---
 @category_bp.route('/<int:category_id>', methods=['DELETE'])
 @swag_from({
     'tags': ['Categories'],
-    'summary': 'Видалити категорію',
-    'parameters': [{'name': 'category_id', 'in': 'path', 'type': 'integer', 'required': True}],
+    'summary': 'Delete a category by ID',
+    'parameters': [
+        {'name': 'category_id', 'in': 'path', 'type': 'integer', 'required': True}
+    ],
     'responses': {
-        200: {'description': 'Категорію видалено'},
-        404: {'description': 'Не знайдено'},
-        500: {'description': 'Помилка сервера'}
+        200: {'description': 'Category successfully deleted'},
+        404: {'description': 'Category not found'},
+        500: {'description': 'Server error'}
     }
 })
 def delete_category(category_id):
     return controller.delete_category(category_id)
 
 
-# --- Отримати додатки за категорією ---
+# --- Get apps by category ---
 @category_bp.route('/<int:category_id>/apps', methods=['GET'])
 @swag_from({
     'tags': ['Categories'],
-    'summary': 'Отримати додатки за категорією',
-    'parameters': [{'name': 'category_id', 'in': 'path', 'type': 'integer', 'required': True}],
+    'summary': 'Get apps by category',
+    'parameters': [
+        {'name': 'category_id', 'in': 'path', 'type': 'integer', 'required': True}
+    ],
     'responses': {
-        200: {'description': 'Список додатків категорії'},
-        500: {'description': 'Помилка сервера'}
+        200: {'description': 'List of applications in this category'},
+        500: {'description': 'Server error'}
     }
 })
 def get_apps_by_category(category_id):

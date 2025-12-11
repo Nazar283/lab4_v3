@@ -6,36 +6,50 @@ user_bp = Blueprint('user', __name__)
 controller = UserController()
 
 
-# --- Отримати всіх користувачів ---
+# --- Get all users ---
 @user_bp.route('/', methods=['GET'])
 @swag_from({
     'tags': ['Users'],
-    'summary': 'Отримати всіх користувачів',
-    'responses': {200: {'description': 'Список користувачів'}, 500: {'description': 'Помилка сервера'}}
+    'summary': 'Get all users',
+    'description': 'Returns a list of all registered users.',
+    'responses': {
+        200: {'description': 'User list retrieved successfully'},
+        500: {'description': 'Server error'}
+    }
 })
 def get_all_users():
     return controller.get_all_users()
 
 
-# --- Отримати користувача за ID ---
+# --- Get user by ID ---
 @user_bp.route('/<int:user_id>', methods=['GET'])
 @swag_from({
     'tags': ['Users'],
-    'summary': 'Отримати користувача за ID',
-    'parameters': [{'name': 'user_id', 'in': 'path', 'type': 'integer', 'required': True}],
-    'responses': {200: {'description': 'Користувач знайдений'}, 404: {'description': 'Не знайдено'}}
+    'summary': 'Get a user by ID',
+    'description': 'Returns detailed information about a specific user.',
+    'parameters': [
+        {'name': 'user_id', 'in': 'path', 'type': 'integer', 'required': True}
+    ],
+    'responses': {
+        200: {'description': 'User found'},
+        404: {'description': 'User not found'},
+        500: {'description': 'Server error'}
+    }
 })
 def get_user_by_id(user_id):
     return controller.get_user_by_id(user_id)
 
 
-# --- Створити користувача ---
+# --- Create a new user ---
 @user_bp.route('/', methods=['POST'])
 @swag_from({
     'tags': ['Users'],
-    'summary': 'Створити нового користувача',
+    'summary': 'Create a new user',
+    'description': 'Creates a new user account in the system.',
     'parameters': [{
-        'name': 'body', 'in': 'body', 'required': True,
+        'name': 'body',
+        'in': 'body',
+        'required': True,
         'schema': {
             'type': 'object',
             'properties': {
@@ -46,58 +60,97 @@ def get_user_by_id(user_id):
             'required': ['email', 'username', 'password_hash']
         }
     }],
-    'responses': {201: {'description': 'Користувача створено'}, 400: {'description': 'Некоректні дані'}}
+    'responses': {
+        201: {'description': 'User created successfully'},
+        400: {'description': 'Invalid input data'},
+        500: {'description': 'Server error'}
+    }
 })
 def create_user():
     return controller.create_user()
 
 
-# --- Оновити користувача ---
+# --- Update user ---
 @user_bp.route('/<int:user_id>', methods=['PUT'])
 @swag_from({
     'tags': ['Users'],
-    'summary': 'Оновити користувача',
+    'summary': 'Update a user',
+    'description': 'Updates user data such as username or other attributes.',
     'parameters': [
         {'name': 'user_id', 'in': 'path', 'type': 'integer', 'required': True},
-        {'name': 'body', 'in': 'body', 'schema': {'type': 'object', 'properties': {'username': {'type': 'string'}}}}
+        {
+            'name': 'body',
+            'in': 'body',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'username': {'type': 'string', 'example': 'updated_username'},
+                    'email': {'type': 'string', 'example': 'updated@example.com'}
+                }
+            }
+        }
     ],
-    'responses': {200: {'description': 'Оновлено'}, 404: {'description': 'Не знайдено'}}
+    'responses': {
+        200: {'description': 'User updated successfully'},
+        400: {'description': 'Invalid update data'},
+        404: {'description': 'User not found'},
+        500: {'description': 'Server error'}
+    }
 })
 def update_user(user_id):
     return controller.update_user(user_id)
 
 
-# --- Видалити користувача ---
+# --- Delete user ---
 @user_bp.route('/<int:user_id>', methods=['DELETE'])
 @swag_from({
     'tags': ['Users'],
-    'summary': 'Видалити користувача',
-    'parameters': [{'name': 'user_id', 'in': 'path', 'type': 'integer', 'required': True}],
-    'responses': {200: {'description': 'Видалено'}, 404: {'description': 'Не знайдено'}}
+    'summary': 'Delete a user',
+    'description': 'Deletes a user account from the system.',
+    'parameters': [
+        {'name': 'user_id', 'in': 'path', 'type': 'integer', 'required': True}
+    ],
+    'responses': {
+        200: {'description': 'User deleted successfully'},
+        404: {'description': 'User not found'},
+        500: {'description': 'Server error'}
+    }
 })
 def delete_user(user_id):
     return controller.delete_user(user_id)
 
 
-# --- Отримати відгуки користувача ---
+# --- Get reviews written by a user ---
 @user_bp.route('/<int:user_id>/reviews', methods=['GET'])
 @swag_from({
     'tags': ['Users'],
-    'summary': 'Отримати відгуки користувача',
-    'parameters': [{'name': 'user_id', 'in': 'path', 'type': 'integer', 'required': True}],
-    'responses': {200: {'description': 'Список відгуків користувача'}, 500: {'description': 'Помилка сервера'}}
+    'summary': 'Get user reviews',
+    'description': 'Returns all reviews written by the specified user.',
+    'parameters': [
+        {'name': 'user_id', 'in': 'path', 'type': 'integer', 'required': True}
+    ],
+    'responses': {
+        200: {'description': 'User reviews retrieved successfully'},
+        500: {'description': 'Server error'}
+    }
 })
 def get_reviews_by_user(user_id):
     return controller.get_reviews_by_user(user_id)
 
 
-# --- Отримати встановлення користувача ---
+# --- Get installations performed by a user ---
 @user_bp.route('/<int:user_id>/installations', methods=['GET'])
-@swag_from({
+@swag_From({
     'tags': ['Users'],
-    'summary': 'Отримати встановлення користувача',
-    'parameters': [{'name': 'user_id', 'in': 'path', 'type': 'integer', 'required': True}],
-    'responses': {200: {'description': 'Список встановлень'}, 500: {'description': 'Помилка сервера'}}
+    'summary': 'Get user installations',
+    'description': 'Returns all application installations performed by the specified user.',
+    'parameters': [
+        {'name': 'user_id', 'in': 'path', 'type': 'integer', 'required': True}
+    ],
+    'responses': {
+        200: {'description': 'User installations retrieved successfully'},
+        500: {'description': 'Server error'}
+    }
 })
 def get_installations_by_user(user_id):
     return controller.get_installations_by_user(user_id)

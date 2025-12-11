@@ -8,7 +8,7 @@ class AppDAO:
         self.db = DatabaseConnection()
     
     def get_all(self) -> List[AppDTO]:
-        """Отримати всі додатки"""
+        """Retrieve all applications."""
         connection = self.db.get_connection()
         cursor = connection.cursor()
         
@@ -20,7 +20,7 @@ class AppDAO:
             cursor.close()
     
     def get_by_id(self, app_id: int) -> Optional[AppDTO]:
-        """Отримати додаток за ID"""
+        """Retrieve an application by its ID."""
         connection = self.db.get_connection()
         cursor = connection.cursor()
         
@@ -32,13 +32,17 @@ class AppDAO:
             cursor.close()
     
     def create(self, app: AppDTO) -> int:
-        """Створити новий додаток"""
+        """Create a new application."""
         connection = self.db.get_connection()
         cursor = connection.cursor()
         
         try:
             cursor.execute(
-                "INSERT INTO Apps (app_name, description, price, developer_id, category_id, release_date) VALUES (%s, %s, %s, %s, %s, %s)",
+                """
+                INSERT INTO Apps 
+                (app_name, description, price, developer_id, category_id, release_date) 
+                VALUES (%s, %s, %s, %s, %s, %s)
+                """,
                 (app.app_name, app.description, app.price, app.developer_id, app.category_id, app.release_date)
             )
             return cursor.lastrowid
@@ -46,13 +50,18 @@ class AppDAO:
             cursor.close()
     
     def update(self, app: AppDTO) -> bool:
-        """Оновити додаток"""
+        """Update an existing application."""
         connection = self.db.get_connection()
         cursor = connection.cursor()
         
         try:
             cursor.execute(
-                "UPDATE Apps SET app_name = %s, description = %s, price = %s, developer_id = %s, category_id = %s, release_date = %s WHERE app_id = %s",
+                """
+                UPDATE Apps 
+                SET app_name = %s, description = %s, price = %s, 
+                    developer_id = %s, category_id = %s, release_date = %s 
+                WHERE app_id = %s
+                """,
                 (app.app_name, app.description, app.price, app.developer_id, app.category_id, app.release_date, app.app_id)
             )
             return cursor.rowcount > 0
@@ -60,7 +69,7 @@ class AppDAO:
             cursor.close()
     
     def delete(self, app_id: int) -> bool:
-        """Видалити додаток"""
+        """Delete an application."""
         connection = self.db.get_connection()
         cursor = connection.cursor()
         
@@ -71,7 +80,7 @@ class AppDAO:
             cursor.close()
     
     def get_reviews_by_app(self, app_id: int) -> List[dict]:
-        """Отримати відгуки додатку (M:1 зв'язок)"""
+        """Retrieve reviews for the application (M:1 relation)."""
         connection = self.db.get_connection()
         cursor = connection.cursor()
         
@@ -89,7 +98,7 @@ class AppDAO:
             cursor.close()
     
     def get_installations_by_app(self, app_id: int) -> List[dict]:
-        """Отримати встановлення додатку (M:1 зв'язок)"""
+        """Retrieve installation records for the application (M:1 relation)."""
         connection = self.db.get_connection()
         cursor = connection.cursor()
         
@@ -108,7 +117,7 @@ class AppDAO:
             cursor.close()
     
     def get_versions_by_app(self, app_id: int) -> List[dict]:
-        """Отримати версії додатку (M:1 зв'язок)"""
+        """Retrieve all versions of the application (M:1 relation)."""
         connection = self.db.get_connection()
         cursor = connection.cursor()
         
@@ -125,7 +134,7 @@ class AppDAO:
             cursor.close()
     
     def get_screenshots_by_app(self, app_id: int) -> List[dict]:
-        """Отримати скріншоти додатку (M:1 зв'язок)"""
+        """Retrieve screenshots for the application (M:1 relation)."""
         connection = self.db.get_connection()
         cursor = connection.cursor()
         

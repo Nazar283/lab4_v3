@@ -1,2 +1,67 @@
+__pycache__/
+*.py[cod]
+*$py.class
 
+venv/
+env/
+.venv/
 
+.ipynb_checkpoints/
+*.sqlite-journal
+
+*.so
+
+instance/
+*.db
+*.sqlite
+database.db
+*.log
+logs/
+*.pid
+
+*.pkl
+*.h5
+*.joblib
+
+uploads/
+media/
+
+.env
+.env.*
+*.env
+!.env.example
+
+Dockerfile~
+docker-compose.override.yml
+docker-compose.prod.yml
+# Ignore all local volumes data
+data/
+volumes/
+
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+.vscode/
+.vscode/*
+.idea/
+*.iml
+
+# PyCharm
+*.pydevproject
+.pytest_cache/
+
+# VS Code Python cache
+.settings/
+
+*.orig
+
+node_modules/
+npm-debug.log
+
+*.bak
+*.tmp
+temp/
+cache/
+
+lab2-3.pem

@@ -6,42 +6,46 @@ review_bp = Blueprint('review', __name__)
 controller = ReviewController()
 
 
-# --- Отримати всі відгуки ---
+# --- Get all reviews ---
 @review_bp.route('/', methods=['GET'])
 @swag_from({
     'tags': ['Reviews'],
-    'summary': 'Отримати всі відгуки',
-    'description': 'Повертає список усіх відгуків у базі даних.',
+    'summary': 'Get all reviews',
+    'description': 'Returns a list of all reviews stored in the database.',
     'responses': {
-        200: {'description': 'Список відгуків отримано'},
-        500: {'description': 'Помилка сервера'}
+        200: {'description': 'List of reviews retrieved successfully'},
+        500: {'description': 'Server error'}
     }
 })
 def get_all_reviews():
     return controller.get_all_reviews()
 
 
-# --- Отримати відгук за ID ---
+# --- Get review by ID ---
 @review_bp.route('/<int:review_id>', methods=['GET'])
 @swag_from({
     'tags': ['Reviews'],
-    'summary': 'Отримати відгук за ID',
-    'parameters': [{'name': 'review_id', 'in': 'path', 'type': 'integer', 'required': True}],
+    'summary': 'Get a review by ID',
+    'description': 'Returns review information based on the provided ID.',
+    'parameters': [
+        {'name': 'review_id', 'in': 'path', 'type': 'integer', 'required': True}
+    ],
     'responses': {
-        200: {'description': 'Відгук знайдено'},
-        404: {'description': 'Не знайдено'},
-        500: {'description': 'Помилка сервера'}
+        200: {'description': 'Review found'},
+        404: {'description': 'Review not found'},
+        500: {'description': 'Server error'}
     }
 })
 def get_review_by_id(review_id):
     return controller.get_review_by_id(review_id)
 
 
-# --- Створити відгук ---
+# --- Create a new review ---
 @review_bp.route('/', methods=['POST'])
 @swag_from({
     'tags': ['Reviews'],
-    'summary': 'Створити новий відгук',
+    'summary': 'Create a new review',
+    'description': 'Creates a new review for an app from a specific user.',
     'parameters': [{
         'name': 'body',
         'in': 'body',
@@ -52,85 +56,101 @@ def get_review_by_id(review_id):
                 'user_id': {'type': 'integer', 'example': 1},
                 'app_id': {'type': 'integer', 'example': 5},
                 'rating': {'type': 'number', 'example': 4.5},
-                'comment': {'type': 'string', 'example': 'Дуже зручний додаток!'}
+                'comment': {'type': 'string', 'example': 'Very convenient and useful app!'}
             },
             'required': ['user_id', 'app_id', 'rating']
-        },
-        'description': 'Дані для створення нового відгуку'
+        }
     }],
     'responses': {
-        201: {'description': 'Відгук створено'},
-        400: {'description': 'Некоректні дані'},
-        500: {'description': 'Помилка сервера'}
+        201: {'description': 'Review successfully created'},
+        400: {'description': 'Invalid input data'},
+        500: {'description': 'Server error'}
     }
 })
 def create_review():
     return controller.create_review()
 
 
-# --- Оновити відгук ---
+# --- Update review ---
 @review_bp.route('/<int:review_id>', methods=['PUT'])
 @swag_from({
     'tags': ['Reviews'],
-    'summary': 'Оновити відгук',
+    'summary': 'Update a review',
+    'description': 'Updates review details such as rating or comment.',
     'parameters': [
         {'name': 'review_id', 'in': 'path', 'type': 'integer', 'required': True},
-        {'name': 'body', 'in': 'body', 'required': True,
-         'schema': {'type': 'object', 'properties': {'rating': {'type': 'number'}, 'comment': {'type': 'string'}}}}
+        {
+            'name': 'body',
+            'in': 'body',
+            'required': True,
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'rating': {'type': 'number', 'example': 5},
+                    'comment': {'type': 'string', 'example': 'Updated comment text'}
+                }
+            }
+        }
     ],
     'responses': {
-        200: {'description': 'Відгук оновлено'},
-        404: {'description': 'Не знайдено'},
-        500: {'description': 'Помилка сервера'}
+        200: {'description': 'Review successfully updated'},
+        400: {'description': 'Invalid update data'},
+        404: {'description': 'Review not found'},
+        500: {'description': 'Server error'}
     }
 })
 def update_review(review_id):
     return controller.update_review(review_id)
 
 
-# --- Видалити відгук ---
+# --- Delete review ---
 @review_bp.route('/<int:review_id>', methods=['DELETE'])
-@swag_from({
+@swag_From({
     'tags': ['Reviews'],
-    'summary': 'Видалити відгук',
-    'parameters': [{'name': 'review_id', 'in': 'path', 'type': 'integer', 'required': True}],
+    'summary': 'Delete a review',
+    'description': 'Deletes a review from the database.',
+    'parameters': [
+        {'name': 'review_id', 'in': 'path', 'type': 'integer', 'required': True}
+    ],
     'responses': {
-        200: {'description': 'Відгук видалено'},
-        404: {'description': 'Не знайдено'},
-        500: {'description': 'Помилка сервера'}
+        200: {'description': 'Review successfully deleted'},
+        404: {'description': 'Review not found'},
+        500: {'description': 'Server error'}
     }
 })
 def delete_review(review_id):
     return controller.delete_review(review_id)
 
 
-# --- Отримати відгуки з деталями ---
+# --- Get reviews with full details ---
 @review_bp.route('/details', methods=['GET'])
 @swag_from({
     'tags': ['Reviews'],
-    'summary': 'Отримати відгуки з деталями (join)',
-    'description': 'Повертає відгуки з повною інформацією про користувача та додаток.',
+    'summary': 'Get reviews with full details (JOIN)',
+    'description': 'Returns reviews including user and application info via JOIN query.',
     'responses': {
-        200: {'description': 'Список відгуків з деталями'},
-        500: {'description': 'Помилка сервера'}
+        200: {'description': 'List of detailed reviews retrieved successfully'},
+        500: {'description': 'Server error'}
     }
 })
 def get_reviews_with_details():
     return controller.get_reviews_with_details()
 
 
-# --- Отримати відгуки за користувачем і додатком ---
+# --- Get reviews by user and app ---
 @review_bp.route('/user/<int:user_id>/app/<int:app_id>', methods=['GET'])
 @swag_from({
     'tags': ['Reviews'],
-    'summary': 'Отримати відгуки користувача про конкретний додаток',
+    'summary': 'Get reviews by a user for a specific app',
+    'description': 'Returns all reviews written by a specific user for a specific application.',
     'parameters': [
         {'name': 'user_id', 'in': 'path', 'type': 'integer', 'required': True},
         {'name': 'app_id', 'in': 'path', 'type': 'integer', 'required': True}
     ],
     'responses': {
-        200: {'description': 'Список відгуків'},
-        500: {'description': 'Помилка сервера'}
+        200: {'description': 'List of reviews retrieved successfully'},
+        404: {'description': 'No reviews found for provided user and app'},
+        500: {'description': 'Server error'}
     }
 })
 def get_reviews_by_user_and_app(user_id, app_id):

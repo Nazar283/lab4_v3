@@ -6,31 +6,50 @@ installation_bp = Blueprint('installation', __name__)
 controller = InstallationController()
 
 
-# --- Отримати всі встановлення ---
+# --- Get all installations ---
 @installation_bp.route('/', methods=['GET'])
-@swag_from({'tags': ['Installations'], 'summary': 'Отримати всі встановлення'})
+@swag_from({
+    'tags': ['Installations'],
+    'summary': 'Get all installations',
+    'description': 'Returns a list of all installation records.',
+    'responses': {
+        200: {'description': 'List of installations successfully retrieved'},
+        500: {'description': 'Server error'}
+    }
+})
 def get_all_installations():
     return controller.get_all_installations()
 
 
-# --- Отримати встановлення за ID ---
+# --- Get installation by ID ---
 @installation_bp.route('/<int:installation_id>', methods=['GET'])
 @swag_from({
     'tags': ['Installations'],
-    'summary': 'Отримати встановлення за ID',
-    'parameters': [{'name': 'installation_id', 'in': 'path', 'type': 'integer', 'required': True}]
+    'summary': 'Get installation by ID',
+    'description': 'Returns information about a specific installation.',
+    'parameters': [
+        {'name': 'installation_id', 'in': 'path', 'type': 'integer', 'required': True}
+    ],
+    'responses': {
+        200: {'description': 'Installation found'},
+        404: {'description': 'Installation not found'},
+        500: {'description': 'Server error'}
+    }
 })
 def get_installation_by_id(installation_id):
     return controller.get_installation_by_id(installation_id)
 
 
-# --- Створити встановлення ---
+# --- Create a new installation ---
 @installation_bp.route('/', methods=['POST'])
 @swag_from({
     'tags': ['Installations'],
-    'summary': 'Створити нове встановлення',
+    'summary': 'Create a new installation',
+    'description': 'Creates a new installation record for a specific app and user.',
     'parameters': [{
-        'name': 'body', 'in': 'body', 'required': True,
+        'name': 'body',
+        'in': 'body',
+        'required': True,
         'schema': {
             'type': 'object',
             'properties': {
@@ -39,35 +58,77 @@ def get_installation_by_id(installation_id):
             },
             'required': ['user_id', 'app_id']
         }
-    }]
+    }],
+    'responses': {
+        201: {'description': 'Installation successfully created'},
+        400: {'description': 'Invalid input data'},
+        500: {'description': 'Server error'}
+    }
 })
 def create_installation():
     return controller.create_installation()
 
 
-# --- Оновити встановлення ---
+# --- Update installation ---
 @installation_bp.route('/<int:installation_id>', methods=['PUT'])
 @swag_from({
     'tags': ['Installations'],
-    'summary': 'Оновити встановлення',
+    'summary': 'Update an installation',
+    'description': 'Updates installation details identified by its ID.',
     'parameters': [
         {'name': 'installation_id', 'in': 'path', 'type': 'integer', 'required': True},
-        {'name': 'body', 'in': 'body', 'schema': {'type': 'object', 'properties': {'app_id': {'type': 'integer'}}}}
-    ]
+        {
+            'name': 'body',
+            'in': 'body',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'app_id': {'type': 'integer', 'example': 10},
+                    'user_id': {'type': 'integer', 'example': 2}
+                }
+            }
+        }
+    ],
+    'responses': {
+        200: {'description': 'Installation successfully updated'},
+        400: {'description': 'Invalid update data'},
+        404: {'description': 'Installation not found'},
+        500: {'description': 'Server error'}
+    }
 })
 def update_installation(installation_id):
     return controller.update_installation(installation_id)
 
 
-# --- Видалити встановлення ---
+# --- Delete installation ---
 @installation_bp.route('/<int:installation_id>', methods=['DELETE'])
-@swag_from({'tags': ['Installations'], 'summary': 'Видалити встановлення'})
+@swag_from({
+    'tags': ['Installations'],
+    'summary': 'Delete an installation',
+    'description': 'Deletes an installation record based on its ID.',
+    'parameters': [
+        {'name': 'installation_id', 'in': 'path', 'type': 'integer', 'required': True}
+    ],
+    'responses': {
+        200: {'description': 'Installation successfully deleted'},
+        404: {'description': 'Installation not found'},
+        500: {'description': 'Server error'}
+    }
+})
 def delete_installation(installation_id):
     return controller.delete_installation(installation_id)
 
 
-# --- Отримати встановлення з деталями ---
+# --- Get all installations with details ---
 @installation_bp.route('/details', methods=['GET'])
-@swag_from({'tags': ['Installations'], 'summary': 'Отримати всі встановлення з деталями'})
+@swag_from({
+    'tags': ['Installations'],
+    'summary': 'Get all installations with details',
+    'description': 'Returns extended installation information, including related user, app, and version data.',
+    'responses': {
+        200: {'description': 'Detailed installation list successfully retrieved'},
+        500: {'description': 'Server error'}
+    }
+})
 def get_installations_with_details():
     return controller.get_installations_with_details()
