@@ -2,7 +2,7 @@ import requests
 import time
 import concurrent.futures
 
-URL = "http://44.201.248.175:5000/api/users/"
+URL = "http://54.224.30.158:5000//api/users/"
 
 # Кількість паралельних потоків
 THREADS = 50

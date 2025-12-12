@@ -21,63 +21,63 @@ controller = AppController()
 #     return controller.get_all_apps()
 
 
-# --- Отримати додаток за ID ---
-@app_bp.route('/<int:app_id>', methods=['GET'])
-@swag_from({
-    'tags': ['Apps'],
-    'summary': 'Отримати додаток за ID',
-    'parameters': [
-        {'name': 'app_id', 'in': 'path', 'type': 'integer', 'required': True, 'description': 'ID додатку'}
-    ],
-    'responses': {
-        200: {'description': 'Додаток знайдено'},
-        404: {'description': 'Додаток не знайдено'},
-        500: {'description': 'Помилка сервера'}
-    }
-})
-def get_app_by_id(app_id):
-    return controller.get_app_by_id(app_id)
+# # --- Отримати додаток за ID ---
+# @app_bp.route('/<int:app_id>', methods=['GET'])
+# @swag_from({
+#     'tags': ['Apps'],
+#     'summary': 'Отримати додаток за ID',
+#     'parameters': [
+#         {'name': 'app_id', 'in': 'path', 'type': 'integer', 'required': True, 'description': 'ID додатку'}
+#     ],
+#     'responses': {
+#         200: {'description': 'Додаток знайдено'},
+#         404: {'description': 'Додаток не знайдено'},
+#         500: {'description': 'Помилка сервера'}
+#     }
+# })
+# def get_app_by_id(app_id):
+#     return controller.get_app_by_id(app_id)
 
 
-# --- Створити новий додаток ---
-@app_bp.route('/', methods=['POST'])
-@swag_from({
-    'tags': ['Apps'],
-    'summary': 'Створити новий додаток',
-    'description': 'Створює новий запис додатку у базі даних.',
-    'parameters': [
-        {
-            'name': 'body',
-            'in': 'body',
-            'required': True,
-            'schema': {
-                'type': 'object',
-                'properties': {
-                    'app_name': {'type': 'string', 'example': 'Instagram'},
-                    'developer_id': {'type': 'integer', 'example': 1},
-                    'category_id': {'type': 'integer', 'example': 2}
-                },
-                'required': ['app_name', 'developer_id', 'category_id']
-            },
-            'description': 'Дані для створення нового додатку'
-        }
-    ],
-    'responses': {
-        201: {
-            'description': 'Додаток створено успішно',
-            'examples': {
-                'application/json': {
-                    'id': 123,
-                    'message': 'App created successfully'
-                }
-            }
-        },
-        400: {'description': 'Відсутні обов’язкові поля'},
-        500: {'description': 'Помилка сервера'}
-    }
-})
-def create_app():
-    return controller.create_app()
+# # --- Створити новий додаток ---
+# @app_bp.route('/', methods=['POST'])
+# @swag_from({
+#     'tags': ['Apps'],
+#     'summary': 'Створити новий додаток',
+#     'description': 'Створює новий запис додатку у базі даних.',
+#     'parameters': [
+#         {
+#             'name': 'body',
+#             'in': 'body',
+#             'required': True,
+#             'schema': {
+#                 'type': 'object',
+#                 'properties': {
+#                     'app_name': {'type': 'string', 'example': 'Instagram'},
+#                     'developer_id': {'type': 'integer', 'example': 1},
+#                     'category_id': {'type': 'integer', 'example': 2}
+#                 },
+#                 'required': ['app_name', 'developer_id', 'category_id']
+#             },
+#             'description': 'Дані для створення нового додатку'
+#         }
+#     ],
+#     'responses': {
+#         201: {
+#             'description': 'Додаток створено успішно',
+#             'examples': {
+#                 'application/json': {
+#                     'id': 123,
+#                     'message': 'App created successfully'
+#                 }
+#             }
+#         },
+#         400: {'description': 'Відсутні обов’язкові поля'},
+#         500: {'description': 'Помилка сервера'}
+#     }
+# })
+# def create_app():
+#     return controller.create_app()
 
 
 
