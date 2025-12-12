@@ -105,7 +105,7 @@ def update_review(review_id):
 
 # --- Delete review ---
 @review_bp.route('/<int:review_id>', methods=['DELETE'])
-@swag_From({
+@swag_from({
     'tags': ['Reviews'],
     'summary': 'Delete a review',
     'description': 'Deletes a review from the database.',
