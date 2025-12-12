@@ -140,7 +140,7 @@ def get_reviews_by_user(user_id):
 
 # --- Get installations performed by a user ---
 @user_bp.route('/<int:user_id>/installations', methods=['GET'])
-@swag_From({
+@swag_from({
     'tags': ['Users'],
     'summary': 'Get user installations',
     'description': 'Returns all application installations performed by the specified user.',
