@@ -7,18 +7,18 @@ controller = AppController()
 
 
 # --- Отримати всі додатки ---
-@app_bp.route('/', methods=['GET'])
-@swag_from({
-    'tags': ['Apps'],
-    'summary': 'Отримати всі додатки',
-    'description': 'Повертає список усіх додатків із бази даних.',
-    'responses': {
-        200: {'description': 'Успішно отримано список додатків'},
-        500: {'description': 'Помилка сервера'}
-    }
-})
-def get_all_apps():
-    return controller.get_all_apps()
+# @app_bp.route('/', methods=['GET'])
+# @swag_from({
+#     'tags': ['Apps'],
+#     'summary': 'Отримати всі додатки',
+#     'description': 'Повертає список усіх додатків із бази даних.',
+#     'responses': {
+#         200: {'description': 'Успішно отримано список додатків'},
+#         500: {'description': 'Помилка сервера'}
+#     }
+# })
+# def get_all_apps():
+#     return controller.get_all_apps()
 
 
 # --- Отримати додаток за ID ---
