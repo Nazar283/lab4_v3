@@ -1,4 +1,4 @@
-name: Deploy to AWS ECS (Full)
+name: Deploy to AWS ECS
 
 on:
   push:
@@ -7,23 +7,19 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  AWS_ACCOUNT_ID: 327030626840
-
   ECR_REPOSITORY: lab4-v3-app
   ECS_CLUSTER: lab4-cluster
   ECS_SERVICE: lab4-service
-  ECS_TASK_FAMILY: lab4-task
+  CONTAINER_NAME: app
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Забрати код
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # 2. AWS credentials
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -31,53 +27,18 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_REGION }}
 
-    # 3. Логін в ECR
     - name: Login to Amazon ECR
       uses: aws-actions/amazon-ecr-login@v2
 
-    # 4. Збірка + push Docker image (УНІКАЛЬНИЙ TAG)
-    - name: Build and push Docker image
+    - name: Build, tag, and push Docker image
       run: |
-        IMAGE_TAG=${GITHUB_SHA::7}
-        IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
+        docker build -t $ECR_REPOSITORY .
+        docker tag $ECR_REPOSITORY:latest \
+          327030626840.dkr.ecr.us-east-1.amazonaws.com/$ECR_REPOSITORY:latest
+        docker push \
+          327030626840.dkr.ecr.us-east-1.amazonaws.com/$ECR_REPOSITORY:latest
 
-        echo "IMAGE_URI=$IMAGE_URI"
-
-        docker build -t $IMAGE_URI .
-        docker push $IMAGE_URI
-
-        echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
-
-    # 5. Забрати поточну Task Definition
-    - name: Get current task definition
-      run: |
-        aws ecs describe-task-definition \
-          --task-definition $ECS_TASK_FAMILY \
-          --query taskDefinition \
-          > task-def.json
-
-    # 6. Створити НОВУ Task Definition з новим image
-    - name: Render new task definition
-      run: |
-        jq '.containerDefinitions[0].image = env.IMAGE_URI
-            | del(
-              .taskDefinitionArn,
-              .revision,
-              .status,
-              .requiresAttributes,
-              .compatibilities,
-              .registeredAt,
-              .registeredBy
-            )' task-def.json > new-task-def.json
-
-    # 7. Зареєструвати НОВУ ревізію Task Definition
-    - name: Register new task definition
-      run: |
-        aws ecs register-task-definition \
-          --cli-input-json file://new-task-def.json
-
-    # 8. Оновити ECS Service → створюється НОВА ТАСКА
-    - name: Update ECS service
+    - name: Force new ECS deployment
       run: |
         aws ecs update-service \
           --cluster $ECS_CLUSTER \
