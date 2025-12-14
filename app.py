@@ -48,8 +48,8 @@ swagger = Swagger(app, config=swagger_config)
 # --- End Swagger Config ---
 
 # --- Реєстрація Blueprint'ів ---
-app.register_blueprint(app_bp, url_prefix='/api/apps')
-app.register_blueprint(user_bp, url_prefix='/api/users')
+# app.register_blueprint(app_bp, url_prefix='/api/apps')
+# app.register_blueprint(user_bp, url_prefix='/api/users')
 app.register_blueprint(developer_bp, url_prefix='/api/developers')
 app.register_blueprint(category_bp, url_prefix='/api/categories')
 app.register_blueprint(review_bp, url_prefix='/api/reviews')
