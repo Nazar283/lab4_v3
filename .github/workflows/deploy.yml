@@ -1,4 +1,4 @@
-name: Deploy to AWS ECS
+name: Deploy to AWS ECS (Stable)
 
 on:
   push:
@@ -7,10 +7,12 @@ on:
 
 env:
   AWS_REGION: us-east-1
+  AWS_ACCOUNT_ID: 327030626840
+
   ECR_REPOSITORY: lab4-v3-app
   ECS_CLUSTER: lab4-cluster
   ECS_SERVICE: lab4-service
-  CONTAINER_NAME: app
+  ECS_TASK_FAMILY: lab4-task
 
 jobs:
   deploy:
@@ -30,15 +32,41 @@ jobs:
     - name: Login to Amazon ECR
       uses: aws-actions/amazon-ecr-login@v2
 
-    - name: Build, tag, and push Docker image
+    - name: Build and push Docker image
       run: |
-        docker build -t $ECR_REPOSITORY .
-        docker tag $ECR_REPOSITORY:latest \
-          327030626840.dkr.ecr.us-east-1.amazonaws.com/$ECR_REPOSITORY:latest
-        docker push \
-          327030626840.dkr.ecr.us-east-1.amazonaws.com/$ECR_REPOSITORY:latest
+        IMAGE_TAG=${GITHUB_SHA::7}
+        IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
 
-    - name: Force new ECS deployment
+        docker build -t $IMAGE_URI .
+        docker push $IMAGE_URI
+
+        echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
+
+    - name: Download current task definition
+      run: |
+        aws ecs describe-task-definition \
+          --task-definition $ECS_TASK_FAMILY \
+          --query taskDefinition > task-def.json
+
+    - name: Create new task definition revision
+      run: |
+        jq '.containerDefinitions[0].image = env.IMAGE_URI
+            | del(
+              .taskDefinitionArn,
+              .revision,
+              .status,
+              .requiresAttributes,
+              .compatibilities,
+              .registeredAt,
+              .registeredBy
+            )' task-def.json > new-task-def.json
+
+    - name: Register new task definition
+      run: |
+        aws ecs register-task-definition \
+          --cli-input-json file://new-task-def.json
+
+    - name: Deploy new revision
       run: |
         aws ecs update-service \
           --cluster $ECS_CLUSTER \
