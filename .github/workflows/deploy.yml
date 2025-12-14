@@ -1,4 +1,4 @@
-name: Deploy to AWS ECS (Stable)
+name: ECS Stable Deploy
 
 on:
   push:
@@ -19,36 +19,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v4
+    - uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_REGION }}
 
-    - name: Login to Amazon ECR
-      uses: aws-actions/amazon-ecr-login@v2
+    - uses: aws-actions/amazon-ecr-login@v2
 
-    - name: Build and push Docker image
+    - name: Build and push image (immutable)
       run: |
-        IMAGE_TAG=${GITHUB_SHA::7}
+        IMAGE_TAG=${GITHUB_SHA::8}
         IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
 
-        docker build -t $IMAGE_URI .
+        docker build --no-cache -t $IMAGE_URI .
         docker push $IMAGE_URI
 
         echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
 
-    - name: Download current task definition
+    - name: Download task definition
       run: |
         aws ecs describe-task-definition \
           --task-definition $ECS_TASK_FAMILY \
           --query taskDefinition > task-def.json
 
-    - name: Create new task definition revision
+    - name: Render new task definition
       run: |
         jq '.containerDefinitions[0].image = env.IMAGE_URI
             | del(
@@ -61,7 +58,7 @@ jobs:
               .registeredBy
             )' task-def.json > new-task-def.json
 
-    - name: Register new task definition
+    - name: Register task definition
       run: |
         aws ecs register-task-definition \
           --cli-input-json file://new-task-def.json
